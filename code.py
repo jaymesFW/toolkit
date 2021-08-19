@@ -157,7 +157,7 @@ databar=cut_frame
 # Sort the table
 databar = databar.sort_values(by=[variable])
 
-fig, ax = plt.subplots(figsize=(4.5,8),dpi=80)
+fig, ax = plt.subplots(figsize=(9,16),dpi=80)
 
 plt.rcParams['hatch.linewidth'] = 1
 plt.rcParams["font.family"] = font
