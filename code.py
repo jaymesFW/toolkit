@@ -132,7 +132,7 @@ player_choice_5 = st.sidebar.selectbox(
 
 
 data=data[["Player","Squad","MP","90s","Gls","Sh/90","SoT/90","CrdY","Fls","Fls/90","Tkl","Tkl/90"]]
-data["Goals"]=data["Gls"]
+
 # Main
 st.title(f"Toolkit Builder")
 
@@ -171,7 +171,7 @@ for name in databar['Player']:
 plt.barh(y=player_last_names, width=databar[variable],color=teamcolor,edgecolor=teamcolor2,hatch="\\");
 
 plt.xticks(fontsize=16)
-plt.yticks(fontsize=20, rotation=90,va="center")
+plt.yticks(fontsize=22, rotation=90,va="center")
 
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
