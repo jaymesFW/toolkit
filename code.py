@@ -171,7 +171,7 @@ for name in databar['Player']:
 plt.barh(y=player_last_names, width=databar[variable],color=teamcolor,edgecolor=teamcolor2,hatch="\\");
 
 plt.xticks(fontsize=16)
-plt.yticks(fontsize=20)
+plt.yticks(fontsize=20, rotation=90,va="center")
 
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
