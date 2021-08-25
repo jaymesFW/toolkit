@@ -93,9 +93,9 @@ mins_choice = st.sidebar.number_input(
 
 data = data[data['90s'] > mins_choice]
 
-teamcolor=st.sidebar.color_picker('Primary Team Colour',value='#EF0107')
+teamcolor=st.sidebar.color_picker('Primary Team Colour')
 
-teamcolor2=st.sidebar.color_picker('Secondary Team Colour',value='#FFFFFF')
+teamcolor2=st.sidebar.color_picker('Secondary Team Colour')
 
 metrics=["Gls","Sh/90","SoT/90","CrdY","Fls/90","Tkl/90"]
 
