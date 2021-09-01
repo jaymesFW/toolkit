@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
-from highlight_text import ax_text, fig_text
+#from highlight_text import ax_text, fig_text
 
 
 fbref_file1='https://fbref.com/en/comps/Big5/2020-2021/stats/players/2020-2021-Big-5-European-Leagues-Stats'
