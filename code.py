@@ -96,11 +96,15 @@ mins_choice = st.sidebar.number_input(
 
 data = data[data['90s'] > mins_choice]
 
-teamcolor = st.sidebar.text_input ('Enter team hex colour (include #)',
-                                    value="red")
+teamcolor=st.sidebar.color_picker('Primary Team Colour')
 
-teamcolor2 = st.sidebar.text_input ('Enter team hex colour 2 (include #)',
-                                    value="white")
+teamcolor2=st.sidebar.color_picker('Secondary Team Colour')
+
+#teamcolor = st.sidebar.text_input ('Enter team hex colour (include #)',
+ #                                   value="red")
+
+#teamcolor2 = st.sidebar.text_input ('Enter team hex colour 2 (include #)',
+ #                                   value="white")
 
 metrics=["Gls","Sh/90","SoT/90","CrdY","Fls/90","Tkl/90"]
 
