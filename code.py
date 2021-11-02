@@ -3,13 +3,18 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
-#from highlight_text import ax_text, fig_text
+from highlight_text import ax_text, fig_text
 
 
-fbref_file1='https://fbref.com/en/comps/Big5/2020-2021/stats/players/2020-2021-Big-5-European-Leagues-Stats'
-fbref_file2='https://fbref.com/en/comps/Big5/2020-2021/shooting/players/2020-2021-Big-5-European-Leagues-Stats'
-fbref_file3='https://fbref.com/en/comps/Big5/2020-2021/misc/players/2020-2021-Big-5-European-Leagues-Stats'
-fbref_file4='https://fbref.com/en/comps/Big5/2020-2021/defense/players/2020-2021-Big-5-European-Leagues-Stats'
+fbref_file1='https://fbref.com/en/comps/Big5/stats/players/Big-5-European-Leagues-Stats'
+fbref_file2='https://fbref.com/en/comps/Big5/shooting/players/Big-5-European-Leagues-Stats'
+fbref_file3='https://fbref.com/en/comps/Big5/misc/players/Big-5-European-Leagues-Stats'
+fbref_file4='https://fbref.com/en/comps/Big5/defense/players/Big-5-European-Leagues-Stats'
+
+st.set_page_config(
+     page_title="",
+     layout="wide",
+     )
 
 @st.cache(allow_output_mutation=True)
 def get_data(fbref_file):
@@ -28,6 +33,7 @@ af=af[["Player+Team","MP"]]
 df=get_data(fbref_file2)
 df["90s"] = pd.to_numeric(df["90s"]).round(2)
 df["Gls"] = pd.to_numeric(df["Gls"])
+df["Gls/90"]=(df["Gls"]/df["90s"]).round(2)
 df["Sh/90"] = pd.to_numeric(df["Sh/90"])
 df["SoT/90"] = pd.to_numeric(df["SoT/90"])
 
@@ -40,11 +46,13 @@ df1=get_data(fbref_file3)
 df1["90s"] = pd.to_numeric(df1["90s"])
 df1["Fls"] = pd.to_numeric(df1["Fls"])
 df1["CrdY"] = pd.to_numeric(df1["CrdY"])
+df1["CrdR"] = pd.to_numeric(df1["CrdR"])
+df1["Bookings"]=df1["CrdY"]+df1["CrdR"]
 
 df1["Fls/90"]=(df1["Fls"]/df1["90s"]).round(2)
 df1["Player+Team"]=df1["Player"]+" "+df1["Squad"]
 
-cols1= ["Player+Team","Comp","CrdY","Fls","Fls/90"] #,"Squad","90s"
+cols1= ["Player+Team","Comp","CrdY","CrdR","Bookings","Fls","Fls/90"] #,"Squad","90s"
 
 df1 = df1[cols1]
 
@@ -65,17 +73,20 @@ df2 = df2[cols2]
 dfdef=df1.join(df2.set_index('Player+Team'), on='Player+Team')
 dfdef=dfdef.join(af.set_index('Player+Team'), on='Player+Team')
 
-dfdef=dfdef[["Player+Team","Comp","Player","Squad","MP","90s","CrdY","Fls","Fls/90","Tkl","Tkl/90"]]
-dfatt=dfatt[["Player+Team","Gls","Sh/90","SoT/90"]]
+dfdef=dfdef[["Player+Team","Comp","Player","Squad","MP","90s","CrdY",
+             "CrdR","Bookings","Fls","Fls/90","Tkl","Tkl/90"]]
+dfatt=dfatt[["Player+Team","Gls","Gls/90","Sh/90","SoT/90"]]
 
 data=dfatt.join(dfdef.set_index('Player+Team'), on='Player+Team')
 
-data=data[["Comp","Player","Squad","MP","90s","Gls","Sh/90","SoT/90","CrdY","Fls","Fls/90","Tkl","Tkl/90"]]
+data=data[["Comp","Player","Squad","MP","90s","Gls","Gls/90","Sh/90","SoT/90","CrdY",
+           "CrdR","Bookings","Fls","Fls/90","Tkl","Tkl/90"]]
+
 
 # App
-
-# Sidebar - title & filters
 st.sidebar.markdown('### Data Filters')
+# Sidebar - title & filters
+
 
 leagues = list(data['Comp'].drop_duplicates())
 league_choice = st.sidebar.selectbox(
@@ -96,50 +107,20 @@ mins_choice = st.sidebar.number_input(
 
 data = data[data['90s'] > mins_choice]
 
-teamcolor=st.sidebar.color_picker('Primary Team Colour','#EF0107')
-
-teamcolor2=st.sidebar.color_picker('Secondary Team Colour','#FFFFFF')
-
-#teamcolor = st.sidebar.text_input ('Enter team hex colour (include #)',
- #                                   value="red")
-
-#teamcolor2 = st.sidebar.text_input ('Enter team hex colour 2 (include #)',
- #                                   value="white")
-
-metrics=["Gls","Sh/90","SoT/90","CrdY","Fls/90","Tkl/90"]
+metrics=data.columns.tolist()#["Gls","Sh/90","SoT/90","CrdY","Fls/90","Tkl/90"]
+metrics.remove("Comp")
+metrics.remove("Player")
+metrics.remove("Squad")
 
 choose_metric = st.sidebar.selectbox(
-    "Choose metric:", metrics, index=0)
+    "Sort by:", metrics, index=0)
 choose_metric = ''.join(choose_metric)
 
 data = data.sort_values(by=[choose_metric],ascending=False)
 
-players = list(data['Player'].drop_duplicates())
-#players = sorted(players)
 
-player_choice_1 = st.sidebar.selectbox(
-    "Player 1:", players,index=0)
-#player_choice_1 = ''.join(player_choice_1)
-
-player_choice_2 = st.sidebar.selectbox(
-    "Player 2:", players, index=1)
-#player_choice_2 = ''.join(player_choice_2)
-
-player_choice_3 = st.sidebar.selectbox(
-    "Player 3:", players, index=2)
-#player_choice_3 = ''.join(player_choice_3)
-
-player_choice_4 = st.sidebar.selectbox(
-    "Player 4:", players, index=3)
-#player_choice_4 = ''.join(player_choice_4)
-
-player_choice_5 = st.sidebar.selectbox(
-    "Player 5:", players, index=4)
-#player_choice_5 = ''.join(player_choice_5)
-
-
-data=data[["Player","Squad","MP","90s","Gls","Sh/90","SoT/90","CrdY","Fls","Fls/90","Tkl","Tkl/90"]]
-
+data=data[["Player","Squad","MP","90s","Gls","Gls/90","Sh/90","SoT/90","CrdY",
+           "CrdR","Bookings","Fls","Fls/90","Tkl","Tkl/90"]]
 # Main
 st.title(f"Toolkit Builder")
 
@@ -147,54 +128,3 @@ st.title(f"Toolkit Builder")
 st.markdown("### Selected Team's Stats 2020/21")
 
 st.dataframe(data.sort_values(by=[choose_metric],ascending=False).reset_index(drop=True))
-
-
-bgcolor="#FAF9F6"
-font='Roboto'
-textc="#463f3a"
-
-# Create a data frame
-cut_frame=data.loc[(data['Player'] == player_choice_1) | (data['Player'] == player_choice_2) | 
-                    (data['Player'] == player_choice_3) | (data['Player'] == player_choice_4) |
-                    (data['Player'] == player_choice_5)]
-
-variable=choose_metric
-databar=cut_frame
-
-# Sort the table
-databar = databar.sort_values(by=[variable])
-
-fig, ax = plt.subplots(figsize=(9,16),dpi=80)
-
-plt.rcParams['hatch.linewidth'] = 1
-plt.rcParams["font.family"] = font
-plt.rcParams['text.color'] = textc
-plt.rcParams['font.size'] =20
-
-player_last_names =[]
-for name in databar['Player']:
-    player_last_names.append(name.split()[-1])
-
-plt.barh(y=player_last_names, width=databar[variable],color=teamcolor,edgecolor=teamcolor2,hatch="\\");
-
-plt.xticks(fontsize=16)
-plt.yticks(fontsize=22, rotation=90,va="center")
-
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-ax.axes.xaxis.set_visible(False)
-
-for i, v in enumerate(databar[variable]):
-    if v >= 0:
-        ax.text(v+0.1, i-0.1, str(v))
-
-ax.set_facecolor(bgcolor)
-fig.patch.set_facecolor(bgcolor)
-
-# Add title
-#fig_text(s=f"Top Scorers",ha='center',
- #       x=.5, y =.9, fontsize=22,fontfamily=font,color=textc)
-
-st.pyplot(fig)
